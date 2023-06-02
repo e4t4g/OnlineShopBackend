@@ -11,107 +11,102 @@
 <img src="./static/pictures/header.jpg">
 <img align="right" width="50%" src="./static/pictures/favicon.ico">
 
-## Описание
+## Description
 
-Бэкенд сервис для небольшого онлайн магазина, написанный на языке программирования Golang.
-Проект представляет собой MVP в виде монолита. Функциоанльность реализована в виде REST API. В связи с простотой и распространенностью, широким функционалом, а также потому что большинство контрибуторов уже ранее работали с ним, в качестве роутера был выбран gin-gonic/gin. В будущем при увеличении нагрузки возможен переход на более производительные роутеры, например fasthttp. По тем же причинам в качестве основной СУБД для хранения данных сервиса была выбрана реляционная СУБД Postgresql. В текущей реализации возможностей данной СУБД достаточно, большинство контрибуторов знакомы с этой базой данных, что позволило ускорить процесс разработки. Для увеличения отзывчивости сервиса реализован кэш на основе key-value базы данных Redis. Кэш используется в наиболее частых и тяжелых операциях - таких как выведение списка категорий и товаров. Для логирования командой был выбран логгер zap за его широкий функционал, высокую скорость работы и понятную документацию. Для мониторинга сервиса используется связка из контейнеров prometheus для сбора метрик и grafana для их отображения. При разработке сервиса по возможности применялись принципы чистой архитектуры. Реализованы юнит тесты для большинства систем и интеграционные тесты базы данных.
+Backend service for a small online store, written in the Golang programming language.
+The project is an MVP in the form of a monolith. The functionality is implemented as a REST API. Due to its simplicity, wide functionality, and the fact that most contributors have worked with it before, the gin-gonic/gin framework was chosen as the router. In the future, as the load increases, a transition to more performant routers, such as fasthttp, is possible. For the same reasons, the PostgreSQL relational database management system (RDBMS) was chosen as the main database for storing service data. The current implementation provides sufficient capabilities of this RDBMS, and most contributors are familiar with this database, which has accelerated the development process. To improve the responsiveness of the service, a cache based on the Redis key-value database is implemented. The cache is used in the most frequent and heavy operations, such as retrieving a list of categories and products. For logging, the zap logger was chosen for its extensive functionality, high performance, and clear documentation. A combination of Prometheus for collecting metrics and Grafana for visualization is used for service monitoring. Whenever possible, the service development followed the principles of clean architecture. Unit tests have been implemented for most systems, as well as integration tests for the database.
 
-## Принципиальная схема:
+## Scheme:
 <img src="./static/pictures/2.jpg">
 
-## Функционал
+## Functionality
 
-### Для пользователей без прав администратора, в том числе не вошедших в систему:
+### For non-administrator users, including those not logged into the system, the following functionality is available:
 
-- Создание/регистрация нового пользователя (эндпоинт `/user/create`, метод POST)
-- Вход в систему уже существующего пользователя (эндпоинт `/user/login`, метод POST)
-- Вход в систему с помощью учетной записи Google (эндпоинт `/user/login/google`, метод GET)
-- Выход из системы (эндпоинт `/user/logout`, метод GET)
-- Просмотр списка всех товаров (эндпоинт `/items/list`, метод GET), в том числе с возможностью задать ограничения по оффсету, лимиту, и параметры для сортировки (есть возможность сортировки по имени и по цене, по возрастанию и по убыванию, для этого эндпоинт дополняется парметрами вида:
- `/items/list/?offset=0&limit=10&sortType=name&sortOrder=asc`)
-- Просмотр списка всех категорий товаров (эндпоинт `categories/list`, метод GET)
-- Просмотр информации о товаре (эндпоинт `items/{itemID}`, метод GET)
-- Просмотр информации о категории товаров (эндпоинт `categories/{categoryID}, метод GET)
-- Просмотр списка товаров в определенной категории (эндпоинт 
-`/items/?param=categoryName&offset=20&limit=10&sort_type=name&sort_order=asc`, также с возможностью сортировки и ограничения по количеству (sort_type == name or price, sort_order == asc or desc), метод GET)
-- Поиск нужного товара (эндпоинт 
-`/items/?param=searchRequest&offset=20&limit=10&sort_type=name&sort_order=asc`, также с возможностью сортировки и ограничения по количеству (sort_type == name or price, sort_order == asc or desc), метод GET)
-- Просмотр информации об общем количестве товаров (эндпоинт `/items/quantity`, метод GET)
-- Просмотр информации о количестве товаров в определенной категории (эндпоинт `/items/quantityCat/{categoryName}`, метод GET)
-- Просмотр информации о количестве товаров в результатах поиска (эндпоинт `/items/quantitySearch/{searchRequest}`, метод GET)
+- Creating/registering a new user (endpoint `/user/create`, method POST)
+- Logging in as an existing user (endpoint `/user/login`, method POST)
+- Logging in with a Google account (endpoint `/user/login/google`, method GET)
+- Logging out (endpoint `/user/logout`, method GET)
+- Viewing a list of all products (endpoint `/items/list`, method GET), with options to set offset, limit, and sorting parameters (sorting can be done by name or price, in ascending or descending order; the endpoint is supplemented with parameters like /items/list/?offset=0&limit=10&sortType=name&sortOrder=asc)
+- Viewing a list of all product categories (endpoint `categories/list`, method GET)
+- Viewing information about a specific item (endpoint `items/{itemID}`, method GET)
+- Viewing information about a specific category (endpoint `categories/{categoryID}`, method GET)
+- Viewing a list of products in a specific category (endpoint `/items/?param=categoryName&offset=20&limit=10&sort_type=name&sort_order=asc`), with options for sorting and limiting the number of results (sort_type can be name or price, sort_order can be asc or desc, method GET)
+- Searching for a specific item (endpoint `/items/?param=searchRequest&offset=20&limit=10&sort_type=name&sort_order=asc`), with options for sorting and limiting the number of results (sort_type can be name or price, sort_order can be asc or desc, method GET)
+- Viewing information about the total quantity of products (endpoint `/items/quantity`, method GET)
+- Viewing information about the quantity of products in a specific category (endpoint `/items/quantityCat/{categoryName}`, method GET)
+- Viewing information about the quantity of products in search results (endpoint `/items/quantitySearch/{searchRequest}`, method GET)
 
-### Для вошедших в систему пользователей, не обладающих правами администратора:
+### For logged-in users without administrator rights:
 
-- Просмотр профиля пользователя (эндпоинт `/user/profile`, метод GET)
-- Изменение информации в профиле пользователя (эндпоинт `/user/profile/edit`, метод PUT)
-- Добавление товара в список избранного (эндпоинт `/items/addFavItem/`, метод POST)
-- Просмотр товаров из списка избранного (эндпоинт 
-`/items/favList?param=userIDt&offset=20&limit=10&sort_type=name&sort_order=asc` (sort_type == name or price, sort_order == asc or desc), метод GET)
-- Удаление товара из списка избранного (эндпоинт `/items/deleteFav/{userID}/{itemID}`, метод DELETE)
-- Корзина создается при входе пользователя в систему, однако, есть возможность вручную создать корзину (эндпоинт `/cart/create/{userID}`, метод POST)
-- Добавление товара в корзину (эндпоинт `/cart/addItem` метод PUT)
-- Удаление товара из корзины (эндпоинт `/cart/delete/{cartID}/{itemID}`, метод DELETE)
-- Просмотр корзины по идентификатору корзины (эндпоинт `/cart/{cartID}`, метод GET)
-- Просмотр корзины по идентификатору пользователя (эндпоинт `/cart/byUser/{userID}`, метод GET)
-- Удаление корзины (эндпоинт `/cart/delete/{cartID}`, метод DELETE)
-- Создание заказа (эндпоинт `/order/create`, метод POST)
-- Просмотр информации о заказе (эндпоинт `/order/{orderID}`, метод GET)
-- Просмотр информации о заказах пользователя (эндпоинт `/order/list/{userID}`, метод GET)
-- Изменение адреса доставки в заказе (эндпоинт `/order/changeaddress`, метод PATCH)
+- Viewing user profile (endpoint `/user/profile`, method GET)
+- Changing user profile information (endpoint `/user/profile/edit`, method PUT)
+- Adding an item to the favorites list (endpoint `/items/addFavItem/`, method POST)
+- Viewing items from the favorites list (endpoint `/items/favList?param=userIDt&offset=20&limit=10&sort_type=name&sort_order=asc` (sort_type can be name or price, sort_order can be asc or desc), method GET)
+- Removing an item from the favorites list (endpoint `/items/deleteFav/{userID}/{itemID}`, method DELETE)
+- A cart is created when a user logs in, but there is also the option to manually create a cart (endpoint `/cart/create/{userID}`, method POST)
+- Adding an item to the cart (endpoint `/cart/addItem`, method PUT)
+- Removing an item from the cart (endpoint `/cart/delete/{cartID}/{itemID}`, method DELETE)
+- Viewing a cart by cart ID (endpoint `/cart/{cartID}`, method GET)
+- Viewing a cart by user ID (endpoint `/cart/byUser/{userID}`, method GET)
+- Deleting a cart (endpoint `/cart/delete/{cartID}`, method DELETE)
+- Creating an order (endpoint /order/create, method POST)
+- Viewing order information (endpoint `/order/{orderID}`, method GET)
+- Viewing user's order information (endpoint `/order/list/{userID}`, method GET)
+- Changing the delivery address in an order (endpoint `/order/changeaddress`, method PATCH)
 
-### Для пользователей, вошедших в систему с правами администратора:
+### For users logged in with administrator rights:
 
-- Смена роли (прав) пользователя (эндпоинт `/user/role/update`, метод PUT)
-- Создание новой роли (прав) (эндпоинт `/user/createRights`, метод POST)
-- Просмотр списка ролей (прав) (эндпоинт `/user/rights/list`, метод GET)
-- Создание новой категории товаров (эндпоинт `/categories/create`, метод POST)
-- Изменение существующей категории товаров (эндпоинт `/categories/{categoryID}`, метод PUT)
-- Добавление изображения к существующей категории (эндпоинт `/categories/image/upload/{categoryID}`, метод POST)
-- Удаление изображения у категории (эндпоинт `/categories/image/delete`, метод  DELETE)
-- Удаление категории (эндпоинт `/categories/delete/{categoryID}`, метод DELETE)
-- Создание нового товара (эндпоинт `/items/create`, метод POST)
-- Изменение существующего товара (эндпоинт `/items/update`, метод PUT)
-- Добавление изображения к существующему товару (эндпоинт `/items/image/upload/:itemID`, метод POST)
-- Удаление изображения товара (эндпоинт 
-`/items/image/delete?id=25f32441-587a-452d-af8c-b3876ae29d45&name=20221209194557.jpeg`, метод DELETE)
-- Удаление товара (эндпоинт `/items/delete/{itemID}`, метод DELETE)
-- Удаление заказа (эндпоинт `/order/delete/{orderID}`, метод DELETE)
-- Изменение статуса заказа (эндпоинт `/order/changestatus`, метод PATCH)
-- Получение списка изображений категорий и товаров (эндпоинт `/images/list`, метод GET)
+- Changing user role/permissions (endpoint `/user/role/update`, method PUT)
+- Creating a new role/permissions (endpoint `/user/createRights`, method POST)
+- Viewing a list of roles/permissions (endpoint `/user/rights/list`, method GET)
+- Creating a new product category (endpoint `/categories/create`, method POST)
+- Modifying an existing product category (endpoint `/categories/{categoryID}`, method PUT)
+- Adding an image to an existing category (endpoint `/categories/image/upload/{categoryID}`, method POST)
+- Deleting an image from a category (endpoint `/categories/image/delete`, method DELETE)
+- Deleting a category (endpoint `/categories/delete/{categoryID}`, method DELETE)
+- Creating a new product (endpoint `/items/create`, method POST)
+- Modifying an existing product (endpoint `/items/update`, method PUT)
+- Adding an image to an existing product (endpoint `/items/image/upload/:itemID`, method POST)
+- Deleting an image of a product (endpoint `/items/image/delete?id=25f32441-587a-452d-af8c-b3876ae29d45&name=20221209194557.jpeg`, method DELETE)
+- Deleting a product (endpoint `/items/delete/{itemID}`, method DELETE)
+- Deleting an order (endpoint `/order/delete/{orderID}`, method DELETE)
+- Changing the status of an order (endpoint `/order/changestatus`, method PATCH)
+- Getting a list of images for categories and products (endpoint `/images/list`, method GET)
 
-Авторизация на сервисе осуществляется с помощью JWT токенов. Кэш создается при запуске сервиса, также при запуске создаются права пользователя и админа и создается пользователь с правами администратора. Данные для создания администратора задаются через переменные окружения. По умолчанию это `admin@mail.ru` и `12345678`. Завершение работы сервиса организовано с использованием принципов graceful shutdown.
+Authentication on the service is done using JWT tokens. The cache is created upon service startup, and user and administrator rights are also created during startup. A user with administrator rights is created as well. The data for creating the administrator is specified through environment variables. By default, these are admin@mail.ru and 12345678. The service is designed to gracefully shut down when necessary.
 
-Благодаря пользователю [ZavNatalia](https://github.com/ZavNatalia) практически весь функционал данного сервиса можно удобно протестировать с помощью [графического интерфейса](https://github.com/ZavNatalia/gb-store/tree/feature/new-api)
+Thanks to the contributions of [ZavNatalia](https://github.com/ZavNatalia) almost all the functionality of this service can be conveniently tested using a [graphical interface](https://github.com/ZavNatalia/gb-store/tree/feature/new-api)
 
-Документирование сервиса осуществляется с помощью библиотеки [swaggo](https://github.com/swaggo/swag).
+The service is documented using the library [swaggo](https://github.com/swaggo/swag).
 
-### Минимальные требования для запуска сервиса:
-- Установленый [docker](https://docs.docker.com/engine/install/)
-- Установленный [docker-compose](https://docs.docker.com/compose/install/)
-- установленный [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git?source=post_page---------------------------)
-- установлена утилита [make](https://habr.com/ru/post/211751/)
-- для запуска тестов необходима установка языка [Golang](https://go.dev/doc/install)
+### Minimum requirements for running the service:
+- Installed [docker](https://docs.docker.com/engine/install/)
+- Installed [docker-compose](https://docs.docker.com/compose/install/)
+- Installed [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git?source=post_page---------------------------)
+- Installed [make](https://habr.com/ru/post/211751/)
+- In order to run the tests, it is necessary to install the programming language. [Golang](https://go.dev/doc/install)
 
-### Инструкция по запуску:
-1. Переходим в папку, в которой планируем разместить исходные файлы
-2. Клонируем репозиторий, для чего вводим в командную строку команду 
+### Deployment instructions:
+1. Navigate to the directory where you plan to place the source files.
+2. Clone the repository by running the following command in the command line: 
 `git clone https://github.com/GBteammates/OnlineShopBackend.git`
-3. Для запуска тестов вводим в командной строке команду `make test`
-4. Для запуска с графическим интерфейсом на ОС Windows вводим в командную строку команду 
-`make up-win`, после окончания процесса установки и сборки переходим в любой удобный браузер и в адресной строке вводим http://localhost:3000, для просмотра данных мониторинга вводим в адресной строке браузера http://localhost:3001, попадаем на страницу входа в Grafana. По умолчанию логин `admin` пароль `admin`, после первого ввода будет предложено сменить. Можно сменить или пропустить.
-5. Для запуска с графическим интерфейсом на ОС Ubuntu вводим в командную строку команду `make up-lin`, после окончания процесса установки и сборки переходим в любой удобный браузер и в адресной строке вводим http://localhost:3000, для просмотра данных мониторинга вводим в адресной строке браузера http://localhost:3001, попадаем на страницу входа в Grafana. По умолчанию логин `admin` пароль `admin`, после первого ввода будет предложено сменить. Можно сменить или пропустить.
-6. Для запуска без графического интерфейса вводим в командной строке `make up` или, если утилита make не установлена, вводим `docker-compose up -d`
-7. После окончания процесса скачивания, создания и запуска необходимых контейнеров можно перейти в браузер и ввести в адресной строке http://localhost:8000/docs/swagger/index.html, откроется страница с графическим интерфейсом документации по спецификации swagger, на которой можно протестировать основные функции сервиса. Также можно использовать приложение [postman](https://www.postman.com/downloads/) или использовать команды [curl](https://curl.se/).
+3. To run the tests, execute the following command in the command line: `make test`
+4. To launch the service with a graphical interface on Windows, run the following command in the command line: 
+`make up-win`. After the installation and build process is completed, open any preferred browser and enter http://localhost:3000 in the address bar. To view the monitoring data, enter http://localhost:3001 in the browser's address bar, which will take you to the Grafana login page. The default login is `admin` and the password is `admin`. You will be prompted to change the password upon first login, which you can either change or skip.
+5. To launch the service with a graphical interface on Ubuntu, run the following command in the command line: `make up-lin`. After the installation and build process is completed, open any preferred browser and enter http://localhost:3000 in the address bar. To view the monitoring data, enter http://localhost:3001 in the browser's address bar, which will take you to the Grafana login page. The default login is `admin` and the password is `admin`. You will be prompted to change the password upon first login, which you can either change or skip.
+6. To launch the service without a graphical interface, run the following command in the command line: `make up`. If the make utility is not installed, use the following command instead: `docker-compose up -d`
+7. Once the download, creation, and launch of the necessary containers are completed, you can open the browser and enter http://localhost:8000/docs/swagger/index.html in the address bar. This will open the Swagger documentation page with a graphical interface where you can test the core functions of the service. You can also use the [postman](https://www.postman.com/downloads/) or the [curl](https://curl.se/) commands for testing.
 
 <img src="./static/pictures/swagger.jpg">
 
-Для остановки сервиса наберите `make down` или `docker-compose down`.
+To stop the service, type `make down` or `docker-compose down`.
 
-Сервис запущен по адресу: http://cozydragon.online/
+The service is running at: http://cozydragon.online/
 
-Сервис распространяется по лицензии [MIT](https://mit-license.org/).
+The service is distributed under the [MIT](https://mit-license.org/).
 
-# Видео:
+# Video:
 
 <img src="./static/pictures/video.gif">
 
